@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SuggestionsComponent } from './suggestions.component';
-import { ListSuggestionComponent } from '../../core/list-suggestion/list-suggestion.component';
 import { SuggestionDetailsComponent } from './suggestion-details/suggestion-details.component';
+import { SuggestionListComponent } from './suggestion-list/suggestion-list.component';
+
 
 
 const routes: Routes = [
@@ -10,7 +11,7 @@ const routes: Routes = [
     path: '',
     component: SuggestionsComponent,
     children: [
-      { path: '', component: ListSuggestionComponent },
+      { path: '', component: SuggestionListComponent },
       { path: ':id', component: SuggestionDetailsComponent }
     ]
   }
