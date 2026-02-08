@@ -1,0 +1,42 @@
+<div class="container my-4" *ngIf="suggestion; else notFound">
+
+  <h2 class="mb-3">{{ suggestion.title }}</h2>
+
+  <p class="text-muted">
+    <strong>{{ suggestion.category }}</strong>
+    · {{ suggestion.date | date:'dd MMM yyyy' }}
+  </p>
+
+  <p class="mt-3">
+    {{ suggestion.description }}
+  </p>
+
+  <span
+    class="badge me-2"
+    [ngClass]="{
+      'bg-success': suggestion.status === 'acceptee',
+      'bg-danger': suggestion.status === 'refusee',
+      'bg-warning text-dark': suggestion.status === 'en_attente'
+    }"
+  >
+    {{ suggestion.status | uppercase }}
+  </span>
+
+  <p class="mt-3">
+    👍 Likes: {{ suggestion.nbLikes }}
+  </p>
+
+  <button
+    class="btn btn-secondary mt-3"
+    (click)="backToList()"
+  >
+    ⬅ Back to list
+  </button>
+
+</div>
+
+<ng-template #notFound>
+  <p class="text-danger">Suggestion not found.</p>
+</ng-template>
+
+
