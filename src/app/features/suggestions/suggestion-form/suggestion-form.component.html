@@ -1,0 +1,85 @@
+<div class="container my-4">
+  <h2 class="text-center mb-4">Ajouter une suggestion</h2>
+
+  <form [formGroup]="suggestionForm" (ngSubmit)="onSubmit()" class="card shadow-sm p-4">
+    <div class="mb-3">
+      <label for="title" class="form-label">Titre <span class="text-danger">*</span></label>
+      <input
+        type="text"
+        id="title"
+        class="form-control"
+        formControlName="title"
+        [class.is-invalid]="title?.invalid && title?.touched"
+      />
+      <div class="invalid-feedback" *ngIf="title?.invalid && title?.touched">
+        <span *ngIf="title?.errors?.['required']">Le titre est obligatoire.</span>
+        <span *ngIf="title?.errors?.['minlength']">Le titre doit contenir au minimum 5 caractères.</span>
+        <span *ngIf="title?.errors?.['pattern']">Le titre ne doit contenir que des lettres et commencer par une majuscule.</span>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+      <textarea
+        id="description"
+        class="form-control"
+        formControlName="description"
+        rows="4"
+        [class.is-invalid]="description?.invalid && description?.touched"
+      ></textarea>
+      <div class="invalid-feedback" *ngIf="description?.invalid && description?.touched">
+        <span *ngIf="description?.errors?.['required']">La description est obligatoire.</span>
+        <span *ngIf="description?.errors?.['minlength']">La description doit contenir au minimum 30 caractères.</span>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="category" class="form-label">Catégorie <span class="text-danger">*</span></label>
+      <select
+        id="category"
+        class="form-select"
+        formControlName="category"
+        [class.is-invalid]="category?.invalid && category?.touched"
+      >
+        <option value="">-- Sélectionner une catégorie --</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+      <div class="invalid-feedback" *ngIf="category?.invalid && category?.touched">
+        <span *ngIf="category?.errors?.['required']">La catégorie est obligatoire.</span>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="date" class="form-label">Date</label>
+      <input
+        type="text"
+        id="date"
+        class="form-control"
+        formControlName="date"
+        readonly
+      />
+    </div>
+
+    <div class="mb-4">
+      <label for="status" class="form-label">Statut</label>
+      <input
+        type="text"
+        id="status"
+        class="form-control"
+        formControlName="status"
+        readonly
+      />
+    </div>
+
+    <div class="d-flex gap-2">
+      <button
+        type="submit"
+        class="btn btn-success"
+        [disabled]="suggestionForm.invalid"
+      >
+        Soumettre
+      </button>
+      <a routerLink="/suggestions" class="btn btn-outline-secondary">Annuler</a>
+    </div>
+  </form>
+</div>

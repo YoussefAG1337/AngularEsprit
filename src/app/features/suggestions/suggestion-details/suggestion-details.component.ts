@@ -8,7 +8,6 @@ import { Suggestion } from '../../../models/suggestion';
   styleUrl: './suggestion-details.component.css'
 })
 export class SuggestionDetailsComponent implements OnInit {
-
   id!: number;
   suggestion!: Suggestion | undefined;
 
@@ -42,8 +41,8 @@ export class SuggestionDetailsComponent implements OnInit {
     },
     {
       id: 4,
-      title: 'Moderniser l’interface utilisateur',
-      description: 'Refonte complète de l’interface utilisateur.',
+      title: "Moderniser l'interface utilisateur",
+      description: "Refonte complète de l'interface utilisateur.",
       category: 'Technologie',
       date: new Date('2025-01-30'),
       status: 'en_attente',
@@ -58,7 +57,6 @@ export class SuggestionDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
-
     this.suggestion = this.suggestions.find(s => s.id === this.id);
   }
 
