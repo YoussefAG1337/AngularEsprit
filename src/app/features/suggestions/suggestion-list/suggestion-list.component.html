@@ -20,6 +20,12 @@
     *ngFor="let s of filteredSuggestions()"
   >
     <div class="card-body">
+      <button
+        class="btn btn-danger btn-sm mb-2"
+        (click)="deleteSuggestion(s)"
+      >
+        Supprimer
+      </button>
 
       <h5 class="card-title fw-bold">{{ s.title }}</h5>
 

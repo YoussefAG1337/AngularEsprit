@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Suggestion } from '../../../models/suggestion';
+import { SuggestionService } from '../../../core/Services/suggestion.service';
 
 @Component({
   selector: 'app-suggestion-form',
@@ -9,6 +11,8 @@ import { Router } from '@angular/router';
 })
 export class SuggestionFormComponent implements OnInit {
   suggestionForm!: FormGroup;
+  id?: number;
+  suggestion?: Suggestion;
 
   categories: string[] = [
     'Infrastructure et bâtiments',
@@ -27,7 +31,9 @@ export class SuggestionFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private actR: ActivatedRoute,
+    private suggestionService: SuggestionService
   ) {}
 
   ngOnInit(): void {
@@ -45,23 +51,52 @@ export class SuggestionFormComponent implements OnInit {
       date: [{ value: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }), disabled: true }],
       status: [{ value: 'en attente', disabled: true }]
     });
+
+    this.id = Number(this.actR.snapshot.params['id']);
+    if (this.id) {
+      this.suggestionService.getSuggestionById(this.id).subscribe((data) => {
+        this.suggestion = data;
+        const patchData = {
+          ...data,
+          date: data.date ? new Date(data.date as any).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''
+        };
+        this.suggestionForm.patchValue(patchData);
+      });
+    }
   }
 
   onSubmit(): void {
     if (this.suggestionForm.valid) {
       const formValue = this.suggestionForm.getRawValue();
-      this.router.navigate(['/suggestions'], {
-        state: {
-          newSuggestion: {
-            title: formValue.title,
-            description: formValue.description,
-            category: formValue.category,
-            date: new Date(),
-            status: 'en attente',
-            nbLikes: 0
-          }
-        }
-      });
+      const date = this.suggestion?.date ? new Date(this.suggestion.date as any) : new Date();
+      const suggestionData = {
+        title: formValue.title,
+        description: formValue.description,
+        category: formValue.category,
+        date,
+        status: this.suggestion?.status || 'en attente',
+        nbLikes: this.suggestion?.nbLikes ?? 0
+      };
+
+      if (this.id && this.suggestion) {
+        this.suggestionService.updateSuggestion({
+          id: this.id,
+          ...suggestionData
+        }).subscribe(() => {
+          this.router.navigate(['/suggestions']);
+        });
+      } else {
+        this.suggestionService.addSuggestion({
+          title: formValue.title,
+          description: formValue.description,
+          category: formValue.category,
+          date: new Date(),
+          status: 'en attente',
+          nbLikes: 0
+        }).subscribe(() => {
+          this.router.navigate(['/suggestions']);
+        });
+      }
     }
   }
 

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Suggestion } from '../../../models/suggestion';
+import { SuggestionService } from '../../../core/Services/suggestion.service';
 
 @Component({
   selector: 'app-suggestion-list',
@@ -9,61 +11,30 @@ import { Suggestion } from '../../../models/suggestion';
 export class SuggestionListComponent implements OnInit {
   searchText: string = '';
   favorites: Suggestion[] = [];
-  suggestions: Suggestion[] = [
-    {
-      id: 1,
-      title: 'Organiser une journée team building',
-      description: 'Suggestion pour organiser une journée de team building.',
-      category: 'Événements',
-      date: new Date('2025-01-20'),
-      status: 'acceptee',
-      nbLikes: 10
-    },
-    {
-      id: 2,
-      title: 'Améliorer le système de réservation',
-      description: 'Proposition pour améliorer la gestion des réservations.',
-      category: 'Technologie',
-      date: new Date('2025-01-15'),
-      status: 'refusee',
-      nbLikes: 0
-    },
-    {
-      id: 3,
-      title: 'Créer un système de récompenses',
-      description: 'Programme de récompenses pour motiver les employés.',
-      category: 'Ressources Humaines',
-      date: new Date('2025-01-25'),
-      status: 'refusee',
-      nbLikes: 0
-    },
-    {
-      id: 4,
-      title: "Moderniser l'interface utilisateur",
-      description: "Refonte complète de l'interface utilisateur.",
-      category: 'Technologie',
-      date: new Date('2025-01-30'),
-      status: 'en_attente',
-      nbLikes: 0
-    }
-  ];
+  suggestions: Suggestion[] = [];
+
+  constructor(
+    private suggestionService: SuggestionService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    const state = history.state as { newSuggestion?: Omit<Suggestion, 'id'> };
-    if (state?.newSuggestion) {
-      const maxId = this.suggestions.length > 0
-        ? Math.max(...this.suggestions.map(s => s.id))
-        : 0;
-      this.suggestions.push({
-        ...state.newSuggestion,
-        id: maxId + 1
-      });
-      history.replaceState({}, '', window.location.href);
-    }
+    this.suggestionService.getSuggestionsList().subscribe((data) => {
+      this.suggestions = data;
+    });
   }
 
   likeSuggestion(s: Suggestion) {
-    s.nbLikes++;
+    this.suggestionService.updateNbLikes(s).subscribe((updated) => {
+      s.nbLikes = updated.nbLikes;
+    });
+  }
+
+  deleteSuggestion(s: Suggestion) {
+    this.suggestionService.deleteSuggestion(s.id).subscribe(() => {
+      this.suggestions = this.suggestions.filter((item) => item.id !== s.id);
+      this.router.navigate(['/suggestions']);
+    });
   }
 
   addToFavorites(s: Suggestion) {
